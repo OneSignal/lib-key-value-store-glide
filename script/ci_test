@@ -1,0 +1,9 @@
+#!/bin/bash
+
+set -e
+
+mkdir ${CARGO_HOME:-~/.cargo}/bin
+curl -LsSf https://get.nexte.st/latest/linux | tar zxf - -C ${CARGO_HOME:-~/.cargo}/bin
+cargo install circleci-junit-fix
+cargo nextest run --verbose --profile ci
+mkdir -p ./target/nextest/result && cat ./target/nextest/ci/junit.original.xml | ${CARGO_HOME:-~/.cargo}/bin/circleci-junit-fix > ./target/nextest/result/junit.xml

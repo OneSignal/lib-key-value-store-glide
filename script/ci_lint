@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+rustup component add clippy
+cargo clippy --no-deps --all-targets -- --deny clippy::all

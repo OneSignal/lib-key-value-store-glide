@@ -1,0 +1,34 @@
+[package]
+name = "key-value-store-glide"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1.25.0", features = [
+    "macros",
+] }
+
+arc-swap = "1.7"
+async-trait = "0.1"
+
+tracing = "0.1"
+serde = { version = "1", features = ["derive"] }
+thiserror = "1.0"
+
+glide-core = { git = "https://github.com/valkey-io/valkey-glide.git", branch = "release-2.4", version = "0.1.0" }
+
+# This _must_ match the vendored version in glide-core
+redis = { git = "https://github.com/valkey-io/valkey-glide.git", branch = "release-2.4", version = "0.25.2" }
+
+google-cloud-auth = "1.13"
+google-cloud-token = "0.1"
+google-cloud-iam-credentials-v1 = "1.10"
+http = "1.3"
+tokio-util = { version = "0.7.18", features = ["rt"] }
+
+[dev-dependencies]
+serde_yaml = "0.9"
+rand = "0.8.5"
+config = "0.14"
+eyre = "0.6.12"
+serial_test = "3.5.0"

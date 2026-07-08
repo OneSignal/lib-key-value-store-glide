@@ -1,0 +1,33 @@
+[store]
+# The directory under the workspace root at which nextest-related files are
+# written. Profile-specific storage is currently written to <dir>/<profile-name>.
+# The `dir` is also referenced in the CircleCI config.
+dir = "target/nextest"
+
+[[profile.default.overrides]]
+filter = 'test(serial_)'
+test-group = 'serial'
+
+[test-groups]
+serial = { max-threads = 1 }
+
+[profile.default]
+test-threads = 1
+retries = 0
+fail-fast = false
+# Print out output for failing tests as soon as they fail, and also at the end
+# of the run (for easy scrollability).
+failure-output = "immediate-final"
+slow-timeout = { period = "10s", terminate-after = 2 }
+
+[profile.ci]
+# Do not cancel the test run on the first failure.
+fail-fast = false
+# Retries generate xml output that CircleCI is unable to parse, therefore disabled
+retries = 0
+
+[profile.ci.junit]
+# The `path` is also referenced in the CircleCI config.
+path = "junit.original.xml"
+# The name of the top-level "report" element in JUnit report.
+report-name = "nextest-run"

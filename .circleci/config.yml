@@ -1,0 +1,36 @@
+version: 2.1
+
+orbs:
+  docker: circleci/docker@3.0.1
+
+jobs:
+  build_test_lint:
+    machine:
+      image: ubuntu-2204:current
+      docker_layer_caching: true
+    steps:
+      - checkout
+      - docker/install_docker_compose
+      - run:
+          name: Run Docker
+          command: docker compose up -d
+      - run:
+          name: Init Cluster
+          command: docker-compose run -u $(id -u) valkey-cluster-init
+      - run:
+          name: Build
+          command: docker-compose run -u $(id -u) code cargo build
+      - run:
+          name: Lint
+          command: docker-compose run -u $(id -u) code script/ci_lint
+      - run:
+          name: Run Tests
+          command: docker-compose run -u $(id -u) code script/ci_test
+      - store_test_results:
+          path: ./target/nextest/result
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - build_test_lint

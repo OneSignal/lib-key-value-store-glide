@@ -1,0 +1,67 @@
+services:
+  code:
+    image: rust:1.97-bullseye
+    environment:
+      TEST_CONFIG_PATH: config-docker.yml
+      CARGO_HOME: /code/tmp
+    stdin_open: true
+    tty: true
+    working_dir: /code
+    depends_on:
+      - valkey
+      - valkey-cluster-1
+      - valkey-cluster-2
+      - valkey-cluster-3
+    volumes:
+      - .:/code:cached
+      - ./docker/config-cluster.sh:/config-cluster.sh
+  valkey:
+    image: valkey/valkey:8.0
+    ports:
+      - 6379:6379
+    environment:
+      VALKEY_EXTRA_FLAGS: "--requirepass development_password --enable-debug-command yes"
+
+  valkey-cluster-1:
+    image: valkey/valkey:8.0
+    container_name: valkey-cluster-1-kvs-glide
+    command: ["valkey-server", "/etc/valkey/valkey.conf"]
+    volumes:
+      - ./docker/valkey-cluster.conf:/etc/valkey/valkey.conf
+    ports:
+      - "7001:6379"
+    environment:
+      VALKEY_EXTRA_FLAGS: "--requirepass development_password --enable-debug-command yes"
+
+  valkey-cluster-2:
+    image: valkey/valkey:8.0
+    container_name: valkey-cluster-2-kvs-glide
+    command: ["valkey-server", "/etc/valkey/valkey.conf"]
+    volumes:
+      - ./docker/valkey-cluster.conf:/etc/valkey/valkey.conf
+    ports:
+      - "7002:6379"
+    environment:
+      VALKEY_EXTRA_FLAGS: "--requirepass development_password --enable-debug-command yes"
+
+  valkey-cluster-3:
+    image: valkey/valkey:8.0
+    container_name: valkey-cluster-3-kvs-glide
+    command: ["valkey-server", "/etc/valkey/valkey.conf"]
+    volumes:
+      - ./docker/valkey-cluster.conf:/etc/valkey/valkey.conf
+    ports:
+      - "7003:6379"
+    environment:
+      VALKEY_EXTRA_FLAGS: "--requirepass development_password --enable-debug-command yes"
+
+  valkey-cluster-init:
+    image: valkey/valkey:8.0
+    depends_on:
+      - valkey-cluster-1
+      - valkey-cluster-2
+      - valkey-cluster-3
+    restart: "no"
+    volumes:
+      - ./docker/config-cluster.sh:/config-cluster.sh
+    entrypoint: ["/config-cluster.sh"]

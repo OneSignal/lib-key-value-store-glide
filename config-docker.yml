@@ -1,0 +1,7 @@
+host: valkey-cluster-1-kvs-glide
+port: 6379
+number_of_retries: 1
+auth:
+  fixed_token:
+    token: development_password
+cluster_mode_enabled: true
