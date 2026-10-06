@@ -102,7 +102,7 @@ impl KeyValueStore {
             node_discovery_mode: NodeDiscoveryMode::default(),
             protocol: None,
             tls_mode: None,
-            connection_timeout: None,
+            connection_timeout: Some(config.connection_timeout),
             periodic_checks: None,
             pubsub_subscriptions: None,
             inflight_requests_limit: None,
@@ -399,6 +399,7 @@ mod tests {
         assert_eq!(config.host, "redis.example.com");
         assert_eq!(config.port, 6379);
         assert_eq!(config.number_of_retries, 3);
+        assert_eq!(config.connection_timeout, 5000);
         match config.auth.method {
             TokenSourceMethodConfig::FixedToken { token } => {
                 assert_eq!(token, "test-token");

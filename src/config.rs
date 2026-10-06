@@ -61,6 +61,9 @@ pub struct KeyValueStoreConfig {
 
     #[serde(default)]
     pub request_timeout: Option<u32>,
+
+    #[serde(default = "connection_timeout")]
+    pub connection_timeout: u32,
 }
 
 impl Default for KeyValueStoreConfig {
@@ -72,6 +75,7 @@ impl Default for KeyValueStoreConfig {
             auth: TokenSourceConfig::default(),
             cluster_mode_enabled: false,
             request_timeout: None,
+            connection_timeout: connection_timeout(),
         }
     }
 }
@@ -82,4 +86,8 @@ const fn redis_port() -> u16 {
 
 const fn number_of_retries() -> usize {
     6
+}
+
+const fn connection_timeout() -> u32 {
+    5000
 }
