@@ -9,7 +9,7 @@ use std::{
 
 use key_value_store_glide::{
     KeyValueStore, KeyValueStoreConfig, KeyValueTokenSource, TokenSourceError,
-    REFRESH_INTERVAL_SECS,
+    REFRESH_INTERVAL_RANGE,
 };
 
 #[derive(Default, Clone)]
@@ -27,7 +27,7 @@ impl KeyValueTokenSource for ExampleTokenSource {
 }
 
 // This examples shows how to use a custom KeyValueTokenSource
-// and that it will be called every REFRESH_INTERVAL_SECS
+// and that it will be called in REFRESH_INTERVAL_RANGE
 #[tokio::main]
 pub async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let config_path =
@@ -42,7 +42,7 @@ pub async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _client = key_value_store.client();
     println!("Waiting for next refresh (1 minute)");
 
-    tokio::time::sleep(Duration::from_secs(REFRESH_INTERVAL_SECS + 5)).await;
+    tokio::time::sleep(Duration::from_secs(REFRESH_INTERVAL_RANGE.end() + 5)).await;
     let _client = key_value_store.client();
     assert_eq!(2, source.token_count.load(Ordering::Relaxed));
 

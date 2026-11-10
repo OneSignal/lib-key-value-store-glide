@@ -5,7 +5,7 @@ mod token_source;
 pub use token_source::{KeyValueTokenSource, TokenSourceError};
 
 mod store;
-pub use store::{KeyValueStore, KeyValueStoreError, REFRESH_INTERVAL_SECS};
+pub use store::{KeyValueStore, KeyValueStoreError, REFRESH_INTERVAL_RANGE};
 
 mod redis_extensions;
 pub use redis_extensions::RedisExtensions;
