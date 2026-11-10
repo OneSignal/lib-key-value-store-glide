@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{ops::RangeInclusive, sync::Arc};
 
 use arc_swap::ArcSwap;
 use glide_core::{
@@ -6,13 +6,14 @@ use glide_core::{
     ConnectionRequest,
 };
 
+use rand::Rng;
 use thiserror::Error;
 use tokio::task::JoinHandle;
 use tokio_util::task::AbortOnDropHandle;
 
 use crate::{config::get_token_source, token_source, KeyValueStoreConfig, KeyValueTokenSource};
 
-pub const REFRESH_INTERVAL_SECS: u64 = 60; // 1 minute
+pub const REFRESH_INTERVAL_RANGE: RangeInclusive<u64> = 54..=66; // 1 minute +/- 10%
 
 #[derive(Error, Debug)]
 pub enum KeyValueStoreError {
@@ -126,11 +127,12 @@ impl KeyValueStore {
             let mut current_token = initial_token;
 
             loop {
+                let refresh_interval = rand::thread_rng().gen_range(REFRESH_INTERVAL_RANGE);
                 tracing::trace!(
-                    duration = REFRESH_INTERVAL_SECS,
+                    duration = refresh_interval,
                     "Waiting before refreshing token",
                 );
-                tokio::time::sleep(tokio::time::Duration::from_secs(REFRESH_INTERVAL_SECS)).await;
+                tokio::time::sleep(tokio::time::Duration::from_secs(refresh_interval)).await;
                 tracing::trace!("Refreshing connection manager with new token");
 
                 let new_token = match token_source.get_token().await {
